@@ -85,6 +85,8 @@
           (list (format nil "--~a" (long-option opt)))
           (error "flag option has to give some value"))))
 
+;;; ===============================================
+
 (defclass option2 (option)
   ()
   (:documentation "wget option style:
@@ -122,3 +124,17 @@
       (if value
           (list (format nil "--~a" (long-option opt)))
           (error "flag option has to give some value"))))
+
+;;; ===============================================
+
+(defclass option3 (option1)
+  ()
+  (:documentation "clingon option style (kind of curl style):
+      --version         display version and exit
+  -n, --id <INT>        the id of quiz
+  -o, --output <VALUE>  output file
+"))
+
+;;; ===============================================
+
+;;:= clap style

@@ -40,29 +40,45 @@
 (in-suite option1-match)
 
 (test option1-match-case0
-  (is (equal (multiple-value-list (option1-match-string "-K, --config <file> Read config from a file"))
-             '("K" "config" "file" "Read config from a file")))
-  (is (equal (multiple-value-list (option1-match-string "-a, --append      Append to target file when uploading"))
-             '("a" "append" "" "Append to target file when uploading")))
-  (is (equal (multiple-value-list (option1-match-string "--capath <dir> CA directory to verify peer against"))
-             '("" "capath" "dir" "CA directory to verify peer against"))))
+      (is (equal (multiple-value-list (option1-match-string "-K, --config <file> Read config from a file"))
+                 '("K" "config" "file" "Read config from a file")))
+      (is (equal (multiple-value-list (option1-match-string "-a, --append      Append to target file when uploading"))
+                 '("a" "append" "" "Append to target file when uploading")))
+      (is (equal (multiple-value-list (option1-match-string "--capath <dir> CA directory to verify peer against"))
+                 '("" "capath" "dir" "CA directory to verify peer against"))))
 
 (def-suite option2-match
   :in options
-  :description "test string match for option1")
+  :description "test string match for option2")
 
 (in-suite option2-match)
 
 (test option2-match-case0
-  (is (equal (multiple-value-list (option2-match-string "  -r,  --recursive                 specify recursive download"))
-             '("r" "recursive" "" "specify recursive download")))
+      (is (equal (multiple-value-list (option2-match-string "  -r,  --recursive                 specify recursive download"))
+                 '("r" "recursive" "" "specify recursive download")))
   
-  (is (equal (multiple-value-list (option2-match-string " -l,  --level=NUMBER              maximum recursion depth (inf or 0 for infinite)"))
-             '("l" "level" "NUMBER" "maximum recursion depth (inf or 0 for infinite)")))
+      (is (equal (multiple-value-list (option2-match-string " -l,  --level=NUMBER              maximum recursion depth (inf or 0 for infinite)"))
+                 '("l" "level" "NUMBER" "maximum recursion depth (inf or 0 for infinite)")))
   
-  (is (equal (multiple-value-list (option2-match-string "       --convert-file-only         convert the file part of the URLs only (usually known as the basename)"))
-             '("" "convert-file-only" "" "convert the file part of the URLs only (usually known as the basename)")))
+      (is (equal (multiple-value-list (option2-match-string "       --convert-file-only         convert the file part of the URLs only (usually known as the basename)"))
+                 '("" "convert-file-only" "" "convert the file part of the URLs only (usually known as the basename)")))
 
-  (is (equal (multiple-value-list (option2-match-string "       --warc-max-size=NUMBER      set maximum size of WARC files to NUMBER
+      (is (equal (multiple-value-list (option2-match-string "       --warc-max-size=NUMBER      set maximum size of WARC files to NUMBER
 "))
-             '("" "warc-max-size" "NUMBER" "set maximum size of WARC files to NUMBER"))))
+                 '("" "warc-max-size" "NUMBER" "set maximum size of WARC files to NUMBER"))))
+
+
+(def-suite option3-match
+  :in options
+  :description "test string match for option3")
+
+(in-suite option3-match)
+
+(test option3-match-case0
+      (is (equal (multiple-value-list (option1-match-string "  -r, --refresh         refresh the all quiz cache"))
+                 '("r" "refresh" "" "refresh the all quiz cache")))
+      (is (equal (multiple-value-list (option1-match-string "  -o, --output <VALUE>  output file"))
+                 '("o" "output" "VALUE" "output file")))
+      (is (equal (multiple-value-list (option1-match-string "  -n, --id <INT>        the id of quiz"))
+                 '("n" "id" "INT" "the id of quiz")))
+      )
