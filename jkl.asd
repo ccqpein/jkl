@@ -14,7 +14,8 @@
                (:module "cmds"
                 :depends-on ("options" "core")
                 :components ((:file "cmds")
-                             (:file "curl" :depends-on ("cmds")))))
+                             (:file "curl" :depends-on ("cmds"))
+                             (:file "wget" :depends-on ("cmds")))))
   :in-order-to ((test-op (test-op "jkl/tests"))))
 
 (defsystem jkl/tests

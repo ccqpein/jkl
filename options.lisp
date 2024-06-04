@@ -77,12 +77,21 @@
      (values "" long-name "" des))
     ))
 
-(defmethod restore-back-to-string ((opt option1) value)
+(defmethod restore-back-to-string ((opt option1) value &optional short-option)
   (if (string/= "" (arg opt))
-      (list (format nil "--~a" (long-option opt))
-            (format nil "~a" value))
+      (if short-option
+          (if (string/= "" (short-option opt))
+              (list (format nil "-~a" (short-option opt))
+                    (format nil "~a" value))
+              (error "option doesn't has short option"))
+          (list (format nil "--~a" (long-option opt))
+                (format nil "~a" value)))
       (if value
-          (list (format nil "--~a" (long-option opt)))
+          (if short-option
+              (if (string/= "" (short-option opt))
+                  (list (format nil "-~a" (short-option opt)))
+                  (error "option doesn't has short option"))
+              (list (format nil "--~a" (long-option opt))))
           (error "flag option has to give some value"))))
 
 ;;; ===============================================
@@ -118,11 +127,19 @@
      (values "" long-name "" des))
     ))
 
-(defmethod restore-back-to-string ((opt option2) value)
+(defmethod restore-back-to-string ((opt option2) value &optional short-option)
   (if (string/= "" (arg opt))
-      (list (format nil "--~a=~a" (long-option opt) value))
+      (if short-option
+          (if (string/= "" (short-option opt))
+              (list (format nil "-~a" (short-option opt)) (format nil "~a" value))
+              (error "option doesn't has short option"))
+          (list (format nil "--~a=~a" (long-option opt) value)))
       (if value
-          (list (format nil "--~a" (long-option opt)))
+          (if short-option
+              (if (string/= "" (short-option opt))
+                  (list (format nil "-~a" (short-option opt)))
+                  (error "option doesn't has short option"))
+              (list (format nil "--~a" (long-option opt))))
           (error "flag option has to give some value"))))
 
 ;;; ===============================================
@@ -137,4 +154,11 @@
 
 ;;; ===============================================
 
-;;:= clap style
+(defclass option4 (option1)
+  ()
+  (:documentation "clap option style (kind of curl style):
+  -D, --del                            Delete the crumbs
+  -R, --restore                        Restore the crumbs back to normal comment
+      --fmt <FMT_COMMAND>              Format command after delete crumbs
+  -O, --output-format <OUTPUT_FORMAT>  Output format: json, list
+"))

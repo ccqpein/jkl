@@ -74,6 +74,7 @@
         (let ((option (gethash (string this) (options comm)))
               )
           (if option
+              ;;:= how to know if the short or long option
               (setf result (append result (restore-back-to-string option (second args)))))
           (setf args (cddr args)))
         ;; if not keyword
@@ -171,6 +172,7 @@
     ))
 
 (defun read-line-content (content)
+  "return each lines of content"
   (loop with s = (make-string-input-stream content)
         for l = (read-line s nil 'eof)
         if (eql 'eof l)
@@ -178,5 +180,3 @@
         else 
           collect l into result
         ))
-
-;;:= need more command like: clingon app, clap app, wget

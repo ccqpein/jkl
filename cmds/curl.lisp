@@ -1,4 +1,3 @@
-;; for example
 (in-package :jkl-cmd)
 
 (defparameter *curl-help* "Usage: curl [options...] <url>
