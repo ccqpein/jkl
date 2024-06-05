@@ -272,4 +272,4 @@
   (apply #'run *curl* args))
 
 ;; for other 
-(export 'curl)
+(export '(curl *curl*))

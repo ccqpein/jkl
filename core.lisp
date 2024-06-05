@@ -1,4 +1,4 @@
-(defpackage :jkl-core
+(defpackage :jkl
   (:use :CL :jkl-options)
   (:export :command
            :list-options
@@ -9,7 +9,7 @@
            :read-line-content
            :run))
 
-(in-package :jkl-core)
+(in-package :jkl)
 
 (defparameter *jkl-cmd-folder* (merge-pathnames (asdf:system-source-directory :jkl) "cmd")
   "default cmd folder")
@@ -27,7 +27,7 @@
     :initarg :options
     :accessor options
     :initform nil
-    :documentation "hashtable of options")))
+    :documentation "hashtable of options, key => (short? option)")))
 
 (defmethod print-object ((cmd command) stream)
   (format stream "name: ~a~%~%subcommand:~%~{~%~#{key:~a~%subcommand:~%~a~}~}~%options:~%~{~%~#{key:~a~%option:~%~a~}~}"
@@ -74,8 +74,10 @@
         (let ((option (gethash (string this) (options comm)))
               )
           (if option
-              ;;:= how to know if the short or long option
-              (setf result (append result (restore-back-to-string option (second args)))))
+              (setf result (append result
+                                   (if (first option) ;; if it is short keyword
+                                       (restore-back-to-string (second option) (second args) :short-option)
+                                       (restore-back-to-string (second option) (second args))))))
           (setf args (cddr args)))
         ;; if not keyword
         (let ((subcmd (if (subcommand comm)
@@ -139,13 +141,12 @@
   (if (gethash (str:upcase (short-option opt)) table)
       (loop with orginal-o = (str:upcase (short-option opt))
             for n from 1
-            unless (gethash (str:concat orginal-o (write-to-string n))
-                            table)
-              do (setf (gethash (str:concat orginal-o (write-to-string n))
-                                table)
-                       opt)
-              and return (str:concat orginal-o (write-to-string n)))
-      (setf (gethash (str:upcase (short-option opt)) table) opt)))
+            ;; add the number after the keyword become new-keyword
+            for new-keyword = (str:concat orginal-o (write-to-string n)) 
+            unless (gethash new-keyword table)
+              do (setf (gethash new-keyword table) `(t ,opt))
+              and return new-keyword)
+      (setf (gethash (str:upcase (short-option opt)) table) `(t ,opt))))
 
 (defun make-new-command (name options &key subcommand)
   (let ((cmd (make-instance 'command :name name)))
@@ -153,7 +154,8 @@
           for opt in options
           do (short-option-table-insert table opt)
           do (if (long-option opt)
-                 (setf (gethash (str:upcase (long-option opt)) table) opt))
+                 (setf (gethash (str:upcase (long-option opt)) table)
+                       `(nil ,opt)))
           finally (setf (options cmd) table))
 
     (if subcommand
@@ -166,6 +168,7 @@
     ))
 
 (defun parse-option-from-help (class line)
+  "parse line to option class"
   (let ((opt (make-instance class)))
     (option-match-string opt line)
     opt

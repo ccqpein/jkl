@@ -1,7 +1,7 @@
 ;;;; -*- Mode: Lisp -*-
 
 (defpackage :jkl-sys
-  (:use :CL :asdf))
+  (:use :CL :uiop :asdf))
 
 (in-package :jkl-sys)
 
@@ -13,9 +13,11 @@
                 :depends-on ("options"))
                (:module "cmds"
                 :depends-on ("options" "core")
-                :components ((:file "cmds")
-                             (:file "curl" :depends-on ("cmds"))
-                             (:file "wget" :depends-on ("cmds")))))
+                :components #.(mapcar #'(lambda (p) (list :file (pathname-name p)))
+                                      (directory-files
+                                       (pathname-directory-pathname
+                                        (uiop/lisp-build:current-lisp-file-pathname))
+                                       "cmds/*.lisp"))))
   :in-order-to ((test-op (test-op "jkl/tests"))))
 
 (defsystem jkl/tests
@@ -28,4 +30,4 @@
             (uiop:symbol-call :fiveam :run!
                               (uiop:find-symbol* :options :jkl-options-test))
             (uiop:symbol-call :fiveam :run!
-                              (uiop:find-symbol* :core :jkl-core-test))))
+                              (uiop:find-symbol* :core :jkl-test))))

@@ -222,4 +222,4 @@ and/or open issues at https://savannah.gnu.org/bugs/?func=additem&group=wget.")
   (apply #'run *wget* args))
 
 ;; for other 
-(export 'wget)
+(export '(wget *wget*))
