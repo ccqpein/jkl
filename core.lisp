@@ -1,18 +1,20 @@
 (defpackage :jkl
   (:use :CL :jkl-options)
-  (:export :command
-           :list-options
-           :get-option
-           :gen-options
-           :make-new-command
-           :parse-option-from-help
-           :read-line-content
-           :run))
+  (:export
+   :*jkl-cmd-folder*
+   :command
+   :list-options
+   :get-options
+   :gen-options
+   :make-new-command
+   :parse-option-from-help
+   :read-line-content
+   :run))
 
 (in-package :jkl)
 
 (defparameter *jkl-cmd-folder* (merge-pathnames (asdf:system-source-directory :jkl) "cmd")
-  "default cmd folder")
+  "default commands folder")
 
 (defclass command ()
   ((name
@@ -27,7 +29,8 @@
     :initarg :options
     :accessor options
     :initform nil
-    :documentation "hashtable of options, key => (short? option)")))
+    :documentation "hashtable of options, key => (short? option)"))
+  (:documentation "the class of command"))
 
 (defmethod print-object ((cmd command) stream)
   (format stream "name: ~a~%~%subcommand:~%~{~%~#{key:~a~%subcommand:~%~a~}~}~%options:~%~{~%~#{key:~a~%option:~%~a~}~}"
@@ -49,11 +52,11 @@
   (loop for k being the hash-keys of (options comm)
           using (hash-value opt)
         when (and short-option-start-with
-                  (str:starts-with? (str:upcase short-option-start-with) (str:upcase (short-option opt))))
+                  (str:starts-with? (str:upcase short-option-start-with) (str:upcase (short-option (second opt)))))
           collect (if with-key (list k opt) opt) into result
 
         when (and long-option-start-with
-                  (str:starts-with? (str:upcase long-option-start-with) (str:upcase (long-option opt))))
+                  (str:starts-with? (str:upcase long-option-start-with) (str:upcase (long-option (second opt)))))
           collect (if with-key (list k opt) opt) into result
 
         when (not (or short-option-start-with long-option-start-with))
@@ -61,8 +64,12 @@
 
         finally (return result)))
 
-(defmethod get-option ((comm command) key)
-  (gethash (str:upcase (string key)) (options comm)))
+(defmethod get-options ((comm command) &rest keys)
+  "get the option of command by keyword"
+  (loop with opts = (options comm)
+        for key in keys
+        collect (gethash (str:upcase (string key)) opts)
+        ))
 
 (defmethod gen-options ((comm command) &rest args)
   "give command and the keyword/value pairs and more argvs to get command line options"
@@ -149,6 +156,7 @@
       (setf (gethash (str:upcase (short-option opt)) table) `(t ,opt))))
 
 (defun make-new-command (name options &key subcommand)
+  "make the new command"
   (let ((cmd (make-instance 'command :name name)))
     (loop with table = (make-hash-table :test 'equal)
           for opt in options
@@ -170,8 +178,8 @@
 (defun parse-option-from-help (class line)
   "parse line to option class"
   (let ((opt (make-instance class)))
-    (option-match-string opt line)
-    opt
+    (if (option-match-string opt line)
+        opt)
     ))
 
 (defun read-line-content (content)

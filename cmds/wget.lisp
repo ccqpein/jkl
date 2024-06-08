@@ -213,11 +213,12 @@ and/or open issues at https://savannah.gnu.org/bugs/?func=additem&group=wget.")
 ;;; make instance of wget command
 (defparameter *wget*
   (make-new-command "wget"
-                    (mapcar (lambda (line) (parse-option-from-help 'option2 line))
-                            (read-line-content *wget-help*)
-                            )))
+                    (loop for line in (read-line-content *wget-help*)
+                          for opt = (parse-option-from-help 'option2 line)
+                          when opt
+                            collect opt)))
 
-;;; run the curl command with args
+;;; run the wget command with args
 (defun wget (&rest args)
   (apply #'run *wget* args))
 

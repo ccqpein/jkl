@@ -3,6 +3,8 @@
   (:export :option
            :option1
            :option2
+           :option3
+           :option4
 
            :short-option
            :long-option
@@ -56,25 +58,28 @@
 
 (defmethod option-match-string ((opt option1) input &key &allow-other-keys)
   (declare (string input))
-  (multiple-value-bind (short-name long-name arg des)
+  (multiple-value-bind (short-name long-name arg des parsed)
       (option1-match-string input)
-    (setf (short-option opt) short-name
-          (long-option opt) long-name
-          (arg opt) arg
-          (description opt) des)))
+    (if parsed
+        (setf (short-option opt) short-name
+              (long-option opt) long-name
+              (arg opt) arg
+              (description opt) des)
+        nil)))
 
 (defun option1-match-string (input)
   "function for option1 match string. easy to test"
   (declare (string input))
   (str:match input
     (("\\s*-" short-name ", " "--" long-name "\\s+<" arg ">\\s+" des)
-     (values short-name long-name arg des))
+     (values short-name long-name arg des t))
     (("\\s*-" short-name ", " "--" long-name "\\s+" des)
-     (values short-name long-name "" des))
+     (values short-name long-name "" des t))
     (("\\s*--" long-name "\\s+<" arg ">\\s+" des)
-     (values "" long-name arg des))
+     (values "" long-name arg des t))
     (("\\s*--" long-name "\\s+" des)
-     (values "" long-name "" des))
+     (values "" long-name "" des t))
+    (t (values "" "" "" "" nil))
     ))
 
 (defmethod restore-back-to-string ((opt option1) value &optional short-option)
@@ -106,25 +111,28 @@
 
 (defmethod option-match-string ((opt option2) input &key &allow-other-keys)
   (declare (string input))
-  (multiple-value-bind (short-name long-name arg des)
+  (multiple-value-bind (short-name long-name arg des parsed)
       (option2-match-string input)
-    (setf (short-option opt) short-name
-          (long-option opt) long-name
-          (arg opt) arg
-          (description opt) des)))
+    (if parsed
+        (setf (short-option opt) short-name
+              (long-option opt) long-name
+              (arg opt) arg
+              (description opt) des)
+        nil)))
 
 (defun option2-match-string (input)
-  "function for option1 match string. easy to test"
+  "function for option2 match string. easy to test"
   (declare (string input))
   (str:match input
     (("\\s*-" short-name ",\\s+--" long-name "=" arg "\\s+" des)
-     (values short-name long-name arg des))
+     (values short-name long-name arg des t))
     (("\\s*-" short-name ",\\s+--" long-name "\\s+" des)
-     (values short-name long-name "" des))
+     (values short-name long-name "" des t))
     (("\\s*" "--" long-name "=" arg "\\s+" des)
-     (values "" long-name arg des))
+     (values "" long-name arg des t))
     (("\\s*" "--" long-name "\\s+" des)
-     (values "" long-name "" des))
+     (values "" long-name "" des t))
+    (t (values "" "" "" "" nil))
     ))
 
 (defmethod restore-back-to-string ((opt option2) value &optional short-option)
@@ -156,7 +164,7 @@
 
 (defclass option4 (option1)
   ()
-  (:documentation "clap option style (kind of curl style):
+  (:documentation "clap (Rust) option style (kind of curl style):
   -D, --del                            Delete the crumbs
   -R, --restore                        Restore the crumbs back to normal comment
       --fmt <FMT_COMMAND>              Format command after delete crumbs

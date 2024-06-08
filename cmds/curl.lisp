@@ -263,9 +263,10 @@
 ;;; make instance of curl command
 (defparameter *curl*
   (make-new-command "curl"
-                    (mapcar (lambda (line) (parse-option-from-help 'option1 line))
-                            (read-line-content *curl-help*)
-                            )))
+                    (loop for line in (read-line-content *curl-help*)
+                          for opt = (parse-option-from-help 'option1 line)
+                          when opt
+                            collect opt)))
 
 ;;; run the curl command with args
 (defun curl (&rest args)
