@@ -1,2 +1,2 @@
 (defpackage :jkl-cmd
-  (:use :CL :jkl :jkl-options))
+  (:use :CL :jkl :jkl-options :uiop))

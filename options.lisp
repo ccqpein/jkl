@@ -170,3 +170,50 @@
       --fmt <FMT_COMMAND>              Format command after delete crumbs
   -O, --output-format <OUTPUT_FORMAT>  Output format: json, list
 "))
+
+;;; ===============================================
+
+;;:= TODO: git help format
+(defclass option5 (option)
+  ()
+  (:documentation "git and git subcommand options:
+  Several examples:
+
+  -n, --no-checkout
+           Fail if the source repository is a shallow repository. The clone.rejectShallow
+           configuration variable can be used to specify the default.
+
+  --[no-]reject-shallow
+           Fail if the source repository is a shallow repository. The clone.rejectShallow
+           configuration variable can be used to specify the default.
+
+  --server-option=<option>
+           Transmit the given string to the server when communicating using protocol version 2. The
+           given string must not contain a NUL or LF character. The server’s handling of server
+           options, including unknown ones, is server-specific. When multiple --server-option=<option>
+           are given, they are all sent to the other side in the order listed on the command line
+
+  --reference[-if-able] <repository>
+           If the reference <repository> is on the local machine, automatically setup
+
+  --no-hardlinks
+           Force the cloning process from a repository on a local filesystem to copy the files under
+
+  -b <name>, --branch <name>
+           Instead of pointing the newly created HEAD to the branch pointed to by the cloned...
+
+  -c <key>=<value>, --config <key>=<value>
+           Set a configuration variable in the newly-created repository; this takes effect immediately...
+
+  -S[<keyid>], --gpg-sign[=<keyid>], --no-gpg-sign
+           GPG-sign the resulting merge commit.
+
+  --log[=<n>], --no-log
+           In addition to branch names,...
+
+  --squash, --no-squash
+           Produce the working tree and index...
+
+
+  This option may don't have the short option because the one-line may have different options. Like \"--log[=<n>], --no-log\"
+"))
