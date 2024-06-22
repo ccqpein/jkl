@@ -13,6 +13,7 @@
 
            :option-match-string
            :restore-back-to-string
+           :equal-option
            ))
 
 (in-package :jkl-options)

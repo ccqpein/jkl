@@ -13,6 +13,11 @@
    :jkl-options
    :option1
    :option2
+   :option3
+   :option4
+   :option5
+   
+   :equal-option
    :option-match-string
    :restore-back-to-string
    :option1-match-string
@@ -115,3 +120,21 @@
   (is (equal (multiple-value-list (option1-match-string "  -O, --output-format <OUTPUT_FORMAT>  Output format: json, list"))
              '("O" "output-format" "OUTPUT_FORMAT" "Output format: json, list" t)))
   )
+
+(test option4-match-case1
+  (is (equal-option (make-instance 'option4
+                                   :short-option "D"
+                                   :long-option "del"
+                                   :arg ""
+                                   :description "Delete the crumbs")
+                    (let ((opt (make-instance 'option4)))
+                      (option-match-string opt "  -D, --del                            Delete the crumbs")
+                      opt))))
+
+(def-suite option5-match
+  :in options
+  :description "test string match for option4")
+
+(in-suite option5-match)
+
+(test option5-match-case0)
