@@ -18,26 +18,33 @@
 
 (in-package :jkl-options)
 
+(declaim (optimize (speed 3)))
+
 (defclass option ()
   ((short-option
     :initarg :short-option
     :initform ""
-    :accessor short-option)
+    :accessor short-option
+    :type string)
    (long-option
     :initarg :long-option
     :initform ""
-    :accessor long-option)
+    :accessor long-option
+    :type string)
    (arg
     :initarg :arg
     :initform ""
-    :accessor arg)
+    :accessor arg
+    :type string)
    (description
     :initarg :description
     :initform ""
-    :accessor description))
+    :accessor description
+    :type string))
   (:documentation "option class"))
 
 (defmethod print-object ((opt option) stream)
+  (declare (stream stream))
   (format stream "short-option: ~a~%long-option: ~a~%argument: ~a~%description: ~a~%"
           (short-option opt)
           (long-option opt)
@@ -84,9 +91,9 @@
     ))
 
 (defmethod restore-back-to-string ((opt option1) value &optional short-option)
-  (if (string/= "" (arg opt))
+  (if (string/= "" (the string (arg opt)))
       (if short-option
-          (if (string/= "" (short-option opt))
+          (if (string/= "" (the string (short-option opt)))
               (list (format nil "-~a" (short-option opt))
                     (format nil "~a" value))
               (error "option doesn't has short option"))
@@ -94,7 +101,7 @@
                 (format nil "~a" value)))
       (if value
           (if short-option
-              (if (string/= "" (short-option opt))
+              (if (string/= "" (the string (short-option opt)))
                   (list (format nil "-~a" (short-option opt)))
                   (error "option doesn't has short option"))
               (list (format nil "--~a" (long-option opt))))
@@ -137,15 +144,15 @@
     ))
 
 (defmethod restore-back-to-string ((opt option2) value &optional short-option)
-  (if (string/= "" (arg opt))
+  (if (string/= "" (the string (arg opt)))
       (if short-option
-          (if (string/= "" (short-option opt))
+          (if (string/= "" (the string (short-option opt)))
               (list (format nil "-~a" (short-option opt)) (format nil "~a" value))
               (error "option doesn't has short option"))
           (list (format nil "--~a=~a" (long-option opt) value)))
       (if value
           (if short-option
-              (if (string/= "" (short-option opt))
+              (if (string/= "" (the string (short-option opt)))
                   (list (format nil "-~a" (short-option opt)))
                   (error "option doesn't has short option"))
               (list (format nil "--~a" (long-option opt))))
@@ -218,3 +225,10 @@
 
   This option may don't have the short option because the one-line may have different options. Like \"--log[=<n>], --no-log\"
 "))
+
+(defmethod option-match-string ((opt option5) input &key &allow-other-keys)
+  )
+
+(defun option5-match-string (input)
+  
+  )

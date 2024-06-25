@@ -13,6 +13,8 @@
 
 (in-package :jkl)
 
+(declaim (optimize (speed 3)))
+
 (defparameter *jkl-cmd-folder* (merge-pathnames (asdf:system-source-directory :jkl) "cmd")
   "default commands folder")
 
