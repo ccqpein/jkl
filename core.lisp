@@ -21,7 +21,8 @@
 (defclass command ()
   ((name
     :initarg :name
-    :accessor name)
+    :accessor name
+    :type string)
    (subcommand
     :initarg :subcommand
     :accessor subcommand
@@ -35,7 +36,10 @@
   (:documentation "the class of command"))
 
 (defmethod print-object ((cmd command) stream)
-  (format stream "name: ~a~%~%subcommand:~%~{~%~#{key:~a~%subcommand:~%~a~}~}~%options:~%~{~%~#{key:~a~%option:~%~a~}~}"
+  (declare (stream stream))
+  (format stream "name: ~a
+subcommand:~%~{~%~@{key:~a~%subcommand:~%~a~}~}
+options:~%~{~%~@{key:~a~%option:~%~a~}~}"
           (name cmd)
           (if (subcommand cmd)
               (loop for sc being the hash-keys of (subcommand cmd)
@@ -69,7 +73,7 @@
 (defmethod get-options ((comm command) &rest keys)
   "get the option of command by keyword"
   (loop with opts = (options comm)
-        for key in keys
+        for key string in keys
         collect (gethash (str:upcase (string key)) opts)
         ))
 
@@ -146,10 +150,10 @@
 
 (defun short-option-table-insert (table opt)
   "insert the short options and solve the conflicts"
-  (when (string= "" (short-option opt)) (return-from short-option-table-insert nil))
+  (when (string= "" (the string (short-option opt))) (return-from short-option-table-insert nil))
   (if (gethash (str:upcase (short-option opt)) table)
       (loop with orginal-o = (str:upcase (short-option opt))
-            for n from 1
+            for n fixnum from 1
             ;; add the number after the keyword become new-keyword
             for new-keyword = (str:concat orginal-o (write-to-string n)) 
             unless (gethash new-keyword table)
