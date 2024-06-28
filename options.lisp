@@ -227,8 +227,20 @@
 "))
 
 (defmethod option-match-string ((opt option5) input &key &allow-other-keys)
-  )
+  (declare (cons input)) ;; option5 might have multiple lines
+  (multiple-value-bind (short-name long-name arg des parsed)
+      (option5-match-string input)
+    (if parsed
+        (setf (short-option opt) short-name
+              (long-option opt) long-name
+              (arg opt) arg
+              (description opt) des)
+        nil)))
 
 (defun option5-match-string (input)
+  (declare (cons input)) ;; option5 might have multiple lines
+  ;; first line including all options
+
+  ;; rest lines including description
   
   )
